@@ -5,7 +5,6 @@
 #include <signal.h>
 
 using namespace std;
-using namespace cv;
 
 typedef std::string String;
 
