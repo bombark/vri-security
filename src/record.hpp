@@ -16,11 +16,21 @@ struct Record {
 	Record(){
 		this->is_recording=false;
 		this->capture.open(0);
+		if ( this->capture.isOpened() ){
+			cerr << "Nao foi possivel abrir a camera\n";
+			exit(1);
+		}
 		capture >> rgb_frame;
-		Size size = rgb_frame.size();
+		/*Size size = rgb_frame.size();
 		int fourcc = CV_FOURCC('U', '2', '6', '3');
 		out_video.open("output.avi", fourcc, 12, Size(704,576), true);
+		if ( this->out_video.isOpened() ){
+			cerr << "Nao foi possivel abrir o video de saida\n";
+			exit(1);
+		}*/
+
 		cvtColor(rgb_frame, cur_frame, CV_RGB2GRAY);
+
 		this->diff = Mat( cur_frame.size(), CV_8UC1 );
 	}
 
