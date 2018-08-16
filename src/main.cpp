@@ -6,8 +6,6 @@
 
 using namespace std;
 
-typedef std::string String;
-
 #include "record.hpp"
 
 

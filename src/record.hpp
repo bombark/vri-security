@@ -59,7 +59,7 @@ struct Record {
 			this->record_time += 1;
 		}
 
-		String date = this->currentDateTime();
+		 std::string date = this->currentDateTime();
 
 		//putText(rgb_frame,'Hello World!', bottomLeftCornerOfText, font, fontScale, fontColor, lineType);
 
@@ -106,7 +106,7 @@ struct Record {
 	}
 
 
-	const std::string currentDateTime() {
+	std::string currentDateTime() {
 		time_t     now = time(0);
 		struct tm  tstruct;
 		char       buf[80];
