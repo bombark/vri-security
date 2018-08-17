@@ -77,7 +77,7 @@ struct Record {
 		putText(rgb_frame, date, pt, 0, 0.6, Scalar(255,0,0), 1 );
 
 		imshow("rec",rgb_frame);
-		printf("recording[%s]: %6d,%d;\n",date.c_str(),sum,record_time);
+		printf("recording[%s]: %6lu,%d;\n",date.c_str(),sum,record_time);
 
 		Mat to_save;
 		cv::resize( rgb_frame, to_save, Size(704,576) );
