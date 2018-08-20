@@ -6,4 +6,4 @@ project (vri-security)
 find_package( OpenCV REQUIRED )
 
 add_executable(teste "src/main.cpp")
-target_link_libraries(teste ${OpenCV_LIBS} microhttpd)
+target_link_libraries(teste ${OpenCV_LIBS})

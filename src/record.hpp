@@ -54,7 +54,7 @@ struct Record {
 	void readNextFrame(){
 		capture >> rgb_frame;
 		Size size = rgb_frame.size();
-		cvtColor(rgb_frame, cur_frame, CV_RGB2GRAY);
+		cvtColor(rgb_frame, cur_frame, cv::COLOR_RGB2GRAY);
 		resize(cur_frame, cur_frame, Size( size.width/4, size.height/4 ) );
 		//return cur_frame;
 	}
