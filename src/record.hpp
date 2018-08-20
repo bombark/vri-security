@@ -7,7 +7,7 @@ using namespace cv;
 
 
 struct Record {
-	Mat cur_frame, old_frame, rgb_frame, diff;
+	Mat cur_frame, old_frame, rgb_frame;//, diff;
 	bool is_recording;
 	VideoWriter out_video;
 	VideoCapture capture;
@@ -16,11 +16,11 @@ struct Record {
 	Record(){
 		this->is_recording=false;
 		this->capture.open(0);
-		if ( this->capture.isOpened() ){
+		if ( ! this->capture.isOpened() ){
 			cerr << "Nao foi possivel abrir a camera\n";
 			exit(1);
 		}
-		capture >> rgb_frame;
+		this->readNextFrame();
 		/*Size size = rgb_frame.size();
 		int fourcc = CV_FOURCC('U', '2', '6', '3');
 		out_video.open("output.avi", fourcc, 12, Size(704,576), true);
@@ -28,10 +28,7 @@ struct Record {
 			cerr << "Nao foi possivel abrir o video de saida\n";
 			exit(1);
 		}*/
-
-		cvtColor(rgb_frame, cur_frame, CV_RGB2GRAY);
-
-		this->diff = Mat( cur_frame.size(), CV_8UC1 );
+		//this->diff = Mat( cur_frame.size(), CV_8UC1 );
 	}
 
 
@@ -43,17 +40,23 @@ struct Record {
 		cur_frame.copyTo(old_frame);
 		if ( is_recording ){
 			waitKey(1000/12);
-			capture >> rgb_frame;
-			cvtColor(rgb_frame, cur_frame, CV_RGB2GRAY);
+			this->readNextFrame();
 			this->exec_recording();
 		} else {
 			waitKey(1000/2);
-			capture >> rgb_frame;
-			cvtColor(rgb_frame, cur_frame, CV_RGB2GRAY);
+			this->readNextFrame();
 			this->exec_stand_by();
 		}
-		//imshow("opa4",cur_frame);
+		imshow("opa4",cur_frame);
 		//imshow("opa222",diff);
+	}
+
+	void readNextFrame(){
+		capture >> rgb_frame;
+		Size size = rgb_frame.size();
+		cvtColor(rgb_frame, cur_frame, CV_RGB2GRAY);
+		resize(cur_frame, cur_frame, Size( size.width/4, size.height/4 ) );
+		//return cur_frame;
 	}
 
 
@@ -62,8 +65,8 @@ struct Record {
 			this->setStandbyState();
 			return ;
 		}
-		size_t sum = this->calcDiff();
-		if ( sum > 3 ){
+		size_t diff = this->calcDiff();
+		if ( this->hasMovement(diff) ){
 			this->record_time = 0;
 		} else {
 			this->record_time += 1;
@@ -77,7 +80,7 @@ struct Record {
 		putText(rgb_frame, date, pt, 0, 0.6, Scalar(255,0,0), 1 );
 
 		imshow("rec",rgb_frame);
-		printf("recording[%s]: %6lu,%d;\n",date.c_str(),sum,record_time);
+		printf("recording[%s]: %6lu,%d;\n",date.c_str(),diff,record_time);
 
 		Mat to_save;
 		cv::resize( rgb_frame, to_save, Size(704,576) );
@@ -86,9 +89,9 @@ struct Record {
 
 
 	void exec_stand_by(){
-		size_t sum = this->calcDiff();
-		cout << "stand_by: " << sum << endl;
-		if ( sum > 3 ){
+		size_t diff = this->calcDiff();
+		cout << "stand_by: " << diff << endl;
+		if ( this->hasMovement(diff) ){
 			this->setRecodingState();
 		}
 	}
@@ -102,17 +105,21 @@ struct Record {
 		this->is_recording = false;
 	}
 
+	bool hasMovement(size_t diff){
+		return diff > 40;
+	}
 
 	size_t calcDiff(){
 		size_t sum=0;
 		for (size_t y=0; y<cur_frame.rows; y++){
 			for (size_t x=0; x<cur_frame.cols; x++){
 				uchar val = abs(cur_frame.at<uchar>(y,x) - old_frame.at<uchar>(y,x));
-				diff.at<char>(y,x) = val;
-				sum += val;
+				if ( val > 20 ){
+					sum += 1;
+				}
 			}
 		}
-		return sum /( cur_frame.rows*cur_frame.cols );
+		return sum;
 	}
 
 

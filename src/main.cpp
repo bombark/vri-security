@@ -8,7 +8,7 @@ using namespace std;
 
 #include "record.hpp"
 
-
+/*
 
 #include <sys/types.h>
 #include <string.h>
@@ -230,7 +230,7 @@ struct RtmpCtrl {
 		if (ret < 0) {
 			std::cout << "Could not initialize stream codec parameters!" << std::endl;
 			exit(1);
-		}*/
+		}* /
 
 		AVDictionary *codec_options = NULL;
 		av_dict_set(&codec_options, "profile", codec_profile.c_str(), 0);
@@ -293,7 +293,7 @@ struct RtmpCtrl {
 
 		int cur_size;
 		uint8_t *cur_ptr;
-	*/
+	* /
 
 		ret = avformat_write_header(ofmt_ctx, nullptr);
 		if (ret < 0){
@@ -318,7 +318,7 @@ struct RtmpCtrl {
 	}
 
 
-};
+};*/
 
 
 
@@ -326,11 +326,11 @@ struct RtmpCtrl {
 
 
 
-//Record record;
-HttpCtrl ctrl(8080);
+Record record;
+//HttpCtrl ctrl(8080);
 
 void signal_callback(int sig){
-	//record.release();
+	record.release();
 	exit(0);
 }
 
@@ -338,7 +338,7 @@ void signal_callback(int sig){
 int main(){
 	signal(SIGINT, signal_callback);
 	while ( true ){
-		//record.execute();
+		record.execute();
 	}
 	return 0;
 }
