@@ -22,12 +22,14 @@ struct Record {
 		}
 		this->readNextFrame();
 		Size size = rgb_frame.size();
-		int fourcc = CV_FOURCC('U', '2', '6', '3');
-
+		//int fourcc = CV_FOURCC('U', '2', '6', '3');
+		int fourcc = VideoWriter::fourcc('M','J','P','G');
 		string file = "out-";
 		file += this->currentDateTime();
 		file += ".avi";
-		out_video.open(file, fourcc, 12, Size(704,576), true);
+		cout << "Abrindo o arquivo " << file << " para gravacao\n";
+		out_video.open(file, fourcc, 24, Size(640,480), true);
+		//out_video << rgb_frame;
 		if ( ! this->out_video.isOpened() ){
 			cerr << "Nao foi possivel abrir o video de saida\n";
 			exit(1);
@@ -42,7 +44,7 @@ struct Record {
 	void execute(){
 		cur_frame.copyTo(old_frame);
 		if ( is_recording ){
-			waitKey(1000/12);
+			waitKey(1000/24);
 			this->readNextFrame();
 			this->exec_recording();
 		} else {
@@ -79,12 +81,12 @@ struct Record {
 		Point pt( rgb_frame.cols-250, rgb_frame.rows-32 );
 		putText(rgb_frame, date, pt, 0, 0.6, Scalar(255,0,0), 1 );
 
-		imshow("rec",rgb_frame);
+		//imshow("rec",rgb_frame);
 		printf("recording[%s]: %6lu,%d;\n",date.c_str(),diff,record_time);
 
-		Mat to_save;
-		cv::resize( rgb_frame, to_save, Size(704,576) );
-		out_video << to_save;
+		//Mat to_save;
+		//cv::resize( rgb_frame, to_save, Size(449,585) );
+		out_video << rgb_frame; //to_save;
 	}
 
 
@@ -106,7 +108,7 @@ struct Record {
 	}
 
 	bool hasMovement(size_t diff){
-		return diff > 40;
+		return diff > 100;
 	}
 
 	size_t calcDiff(){
