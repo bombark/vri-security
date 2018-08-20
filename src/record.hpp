@@ -21,14 +21,17 @@ struct Record {
 			exit(1);
 		}
 		this->readNextFrame();
-		/*Size size = rgb_frame.size();
+		Size size = rgb_frame.size();
 		int fourcc = CV_FOURCC('U', '2', '6', '3');
-		out_video.open("output.avi", fourcc, 12, Size(704,576), true);
-		if ( this->out_video.isOpened() ){
+
+		string file = "out-";
+		file += this->currentDateTime();
+		file += ".avi";
+		out_video.open(file, fourcc, 12, Size(704,576), true);
+		if ( ! this->out_video.isOpened() ){
 			cerr << "Nao foi possivel abrir o video de saida\n";
 			exit(1);
-		}*/
-		//this->diff = Mat( cur_frame.size(), CV_8UC1 );
+		}
 	}
 
 
@@ -73,9 +76,6 @@ struct Record {
 		}
 
 		 std::string date = this->currentDateTime();
-
-		//putText(rgb_frame,'Hello World!', bottomLeftCornerOfText, font, fontScale, fontColor, lineType);
-
 		Point pt( rgb_frame.cols-250, rgb_frame.rows-32 );
 		putText(rgb_frame, date, pt, 0, 0.6, Scalar(255,0,0), 1 );
 
