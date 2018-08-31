@@ -5,5 +5,6 @@ project (vri-security)
 
 find_package( OpenCV REQUIRED )
 
-add_executable(teste "src/main.cpp")
-target_link_libraries(teste ${OpenCV_LIBS})
+add_executable(vri-record "src/main.cpp")
+target_link_libraries(vri-record ${OpenCV_LIBS})
+install(TARGETS vri-record DESTINATION bin)

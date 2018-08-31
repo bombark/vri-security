@@ -23,17 +23,6 @@ struct Record {
 		this->readNextFrame();
 		Size size = rgb_frame.size();
 		//int fourcc = CV_FOURCC('U', '2', '6', '3');
-		int fourcc = VideoWriter::fourcc('M','J','P','G');
-		string file = "out-";
-		file += this->currentDateTime();
-		file += ".avi";
-		cout << "Abrindo o arquivo " << file << " para gravacao\n";
-		out_video.open(file, fourcc, 24, Size(640,480), true);
-		//out_video << rgb_frame;
-		if ( ! this->out_video.isOpened() ){
-			cerr << "Nao foi possivel abrir o video de saida\n";
-			exit(1);
-		}
 	}
 
 
@@ -52,7 +41,7 @@ struct Record {
 			this->readNextFrame();
 			this->exec_stand_by();
 		}
-		imshow("opa4",cur_frame);
+		//imshow("opa4",cur_frame);
 		//imshow("opa222",diff);
 	}
 
@@ -77,7 +66,7 @@ struct Record {
 			this->record_time += 1;
 		}
 
-		 std::string date = this->currentDateTime();
+		std::string date = this->currentDateTime();
 		Point pt( rgb_frame.cols-250, rgb_frame.rows-32 );
 		putText(rgb_frame, date, pt, 0, 0.6, Scalar(255,0,0), 1 );
 
@@ -92,7 +81,7 @@ struct Record {
 
 	void exec_stand_by(){
 		size_t diff = this->calcDiff();
-		cout << "stand_by: " << diff << endl;
+		//cout << "stand_by: " << diff << endl;
 		if ( this->hasMovement(diff) ){
 			this->setRecodingState();
 		}
@@ -101,10 +90,23 @@ struct Record {
 	void setRecodingState(){
 		this->record_time = 0;
 		this->is_recording = true;
+		int fourcc = VideoWriter::fourcc('M','J','P','G');
+		string file = "out-";
+		file += this->currentDateTime();
+		file += ".avi";
+		cout << "Abrindo o arquivo " << file << " para gravacao\n";
+		out_video.open(file, fourcc, 24, Size(640,480), true);
+		//out_video << rgb_frame;
+		if ( ! this->out_video.isOpened() ){
+			cerr << "Nao foi possivel abrir o video de saida\n";
+			exit(1);
+		}
 	}
 
 	void setStandbyState(){
 		this->is_recording = false;
+		if ( this->out_video.isOpened() )
+			this->out_video.release();
 	}
 
 	bool hasMovement(size_t diff){
@@ -116,7 +118,7 @@ struct Record {
 		for (size_t y=0; y<cur_frame.rows; y++){
 			for (size_t x=0; x<cur_frame.cols; x++){
 				uchar val = abs(cur_frame.at<uchar>(y,x) - old_frame.at<uchar>(y,x));
-				if ( val > 20 ){
+				if ( val > 30 ){
 					sum += 1;
 				}
 			}
