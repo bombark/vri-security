@@ -12,6 +12,7 @@ struct Record {
 	VideoWriter out_video;
 	VideoCapture capture;
 	int record_time;
+	int stand_time;
 
 	Record(){
 		this->is_recording=false;
@@ -22,6 +23,7 @@ struct Record {
 		}
 		this->readNextFrame();
 		Size size = rgb_frame.size();
+		this->setStandbyState();
 		//int fourcc = CV_FOURCC('U', '2', '6', '3');
 	}
 
@@ -37,7 +39,7 @@ struct Record {
 			this->readNextFrame();
 			this->exec_recording();
 		} else {
-			waitKey(1000/2);
+			waitKey(1000/24);
 			this->readNextFrame();
 			this->exec_stand_by();
 		}
@@ -80,6 +82,10 @@ struct Record {
 
 
 	void exec_stand_by(){
+		this->stand_time += 1;
+		if ( (this->stand_time%12) != 0 )
+			return;
+
 		size_t diff = this->calcDiff();
 		//cout << "stand_by: " << diff << endl;
 		if ( this->hasMovement(diff) ){
@@ -104,6 +110,7 @@ struct Record {
 	}
 
 	void setStandbyState(){
+		this->stand_time = 0;
 		this->is_recording = false;
 		if ( this->out_video.isOpened() )
 			this->out_video.release();
