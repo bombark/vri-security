@@ -9,3 +9,6 @@ RestartSec=1
 User=vri
 WorkingDirectory=/var/lib/vri-record
 ExecStart=/usr/local/bin/vri-record
+
+[Install]
+WantedBy=multi-user.target
